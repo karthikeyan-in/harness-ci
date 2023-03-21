@@ -1,0 +1,48 @@
+pipeline:
+  name: cicd_kk
+  identifier: cicd_kk
+  projectIdentifier: harnessdemo
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: github_kk
+        repoName: harness-ci
+        build: <+input>
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: test
+                  identifier: test
+                  spec:
+                    shell: Sh
+                    command: npm test
+              - step:
+                  type: Run
+                  name: dockerbuildandpush
+                  identifier: dockerbuildandpush
+                  spec:
+                    shell: Sh
+                    command: |-
+                      docker build -t karthikeyanmcloud/nodejs:latest .
+                      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" docker.io
+                      docker push karthikeyanmcloud/nodejs:latest
+                    envVariables:
+                      DOCKER_USERNAME: karthikeyanmcloud
+                      DOCKER_PASSWORD: VIkram@94
