@@ -1,0 +1,45 @@
+pipeline:
+  name: test1
+  identifier: test1
+  projectIdentifier: harnessdemo
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: github_kk
+        repoName: harness-ci
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: npm
+                  identifier: npm
+                  spec:
+                    shell: Sh
+                    command: npm test
+              - step:
+                  type: Run
+                  name: Dockerbuilddeploy
+                  identifier: Dockerbuilddeploy
+                  spec:
+                    shell: Sh
+                    command: "docker\_build\_-t\_karthikeyanmcloud/nodejs:latest\_.\ndocker\_login\_-u=\"$DOCKER_USERNAME\"\_-p=\"$DOCKER_PASSWORD\"\_docker.io\ndocker\_push\_karthikeyanmcloud/nodejs:latest"
+                    envVariables:
+                      DOCKER_USERNAME: karthikeyanmcloud
+                      DOCKER_PASSWORD: VIkram@94
